@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Currency Converter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<Style>
+    body {
+  font-family: Arial, sans-serif;
+  background: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.converter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input, select, button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+#result {
+  margin-top: 15px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+</style>
+
+
+<body>
+  <div class="container">
+    <h1>Currency Converter</h1>
+    
+    <div class="converter">
+      <input type="number" id="amount" placeholder="Enter amount" />
+      
+      <select id="fromCurrency"></select>
+      <select id="toCurrency"></select>
+      
+      <button id="convert">Convert</button>
+      
+      <div id="result"></div>
+    </div>
+  </div>
+  <script>
+    const fromCurrency = document.getElementById('fromCurrency');
+const toCurrency = document.getElementById('toCurrency');
+const convertBtn = document.getElementById('convert');
+const result = document.getElementById('result');
+
+const currencyList = ["USD", "EUR", "INR", "GBP", "JPY", "CAD", "AUD", "CNY"];
+
+function populateSelectBoxes() {
+  currencyList.forEach(currency => {
+    const option1 = document.createElement('option');
+    const option2 = document.createElement('option');
+    option1.value = option2.value = currency;
+    option1.text = option2.text = currency;
+    fromCurrency.appendChild(option1);
+    toCurrency.appendChild(option2);
+  });
+
+  fromCurrency.value = "USD";
+  toCurrency.value = "INR";
+}
+
+populateSelectBoxes();
+
+convertBtn.addEventListener('click', () => {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const from = fromCurrency.value;
+  const to = toCurrency.value;
+
+  if (isNaN(amount)) {
+    result.textContent = "Please enter a valid amount.";
+    return;
+  }
+
+  fetch(`https://api.exchangerate-api.com/v4/latest/${from}`)
+    .then(res => res.json())
+    .then(data => {
+      const rate = data.rates[to];
+      const converted = (amount * rate).toFixed(2);
+      result.textContent = `${amount} ${from} = ${converted} ${to}`;
+    })
+    .catch(() => {
+      result.textContent = "Error fetching exchange rate.";
+    });
+});
+
+  </script>
+
+</body>
+</html>
